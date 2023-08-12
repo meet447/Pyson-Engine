@@ -197,13 +197,24 @@ class VisualNovelGame:
         self.screen.blit(background_image, (0, 0))
 
         # Render dialogue box
+        text_box_style = current_scene.get("text_box_style", {})  # Get the style data, or use default if not provided
         self.dialogue_rect = pygame.Rect(
             self.screen_width * 0.05,
             self.screen_height * 0.7,
             self.screen_width * 0.9,
             self.screen_height * 0.25
         )
-        pygame.draw.rect(self.screen, (220, 220, 220), self.dialogue_rect)
+        background_color = text_box_style.get("background_color", (220, 220, 220))
+        border_color = text_box_style.get("border_color", (100, 100, 100))
+        border_width = text_box_style.get("border_width", 2)
+        transparency = text_box_style.get("transparency", 1.0)
+        
+        # Apply transparency
+        surface = pygame.Surface((self.dialogue_rect.width, self.dialogue_rect.height), pygame.SRCALPHA)
+        background_color_with_alpha = background_color + [int(255 * transparency)]
+        pygame.draw.rect(surface, background_color_with_alpha, surface.get_rect())
+        pygame.draw.rect(surface, border_color, surface.get_rect(), border_width)
+        self.screen.blit(surface, self.dialogue_rect.topleft)
 
         y = self.dialogue_rect.top + 20
 
@@ -278,4 +289,4 @@ class VisualNovelGame:
 
 if __name__ == "__main__":
     game = VisualNovelGame()
-    game.run()
+    game.run()  

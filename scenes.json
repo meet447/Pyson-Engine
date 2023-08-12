@@ -1,126 +1,143 @@
 {
-    "scenes": [
-      {
-        "background": "sprites/background.jpg",
-        "dialogues": [
-          {
-            "speaker": "Saber",
-            "text": "Hello, welcome to our adventure!"
-          },
-          {
-            "speaker": "Jacl",
-            "text": "Indeed, it's going to be exciting."
-          }
-        ],
-        "characters": [
-          {
-            "sprite": "sprites/jack.png",
-            "x": 100,
-            "width": 400,
-            "height": 600 
-
-          },
-          {
-            "sprite": "sprites/jack.png",
-            "x": 1200,
-            "side":"right",
-            "width": 400,
-            "height": 600 
+  "scenes": [
+    {
+      "background": "sprites/background.jpg",
+      "dialogues": [
+        {
+          "speaker": "Saber",
+          "text": "Hello, welcome to our adventure!"
+        },
+        {
+          "speaker": "Jacl",
+          "text": "Indeed, it's going to be exciting."
         }
-        ],
-        "choices": [
-          {
-            "text": "Let's go on an adventure!",
-            "next_scene": 1
-          },
-          {
-            "text": "I'm not sure...",
-            "next_scene": 2
-          }
-        ]
-      },
-      {
-        "background": "sprites/shrine.jpg",
-        "dialogues": [
-          {
-            "speaker": "Alice",
-            "text": "Here we are, in the mysterious forest."
-          }
-        ],
-        "characters": [
-          {
-            "sprite": "sprites/illya.png",
-             "x":500,
-            "width": 400,
-            "height": 700 
-          }
-        ],
-        "choices": [
-          {
-            "text": "Search for hidden treasure.",
-            "next_scene": 3
-          },
-          {
-            "text": "Turn back and leave the forest.",
-            "next_scene": 4
-          }
-        ]
-      },
-      {
-        "background": "sprites/background.jpg",
-        "dialogues": [
-          {
-            "speaker": "Bob",
-            "text": "Look, a hidden cave entrance!"
-          }
-        ],
-        "characters": [
-          {
-            "sprite": "sprites/alter.png",
-            "x":500,
-            "width": 400,
-            "height": 700 
-          }
-        ],
-        "choices": [
-          {
-            "text": "Enter the cave cautiously.",
-            "next_scene": 5
-          },
-          {
-            "text": "Stay outside and wait.",
-            "next_scene": 6
-          }
-        ]
-      },
-      {
-        "background": "treasure_room.jpg",
-        "dialogues": [
-          {
-            "speaker": "Alice",
-            "text": "Wow, we found the hidden treasure!"
-          }
-        ],
-        "characters": [
-          {
-            "sprite": "alice_sprite.png"
-          }
-        ]
-      },
-      {
-        "background": "exit.jpg",
-        "dialogues": [
-          {
-            "speaker": "Bob",
-            "text": "Phew, that was an exciting adventure!"
-          }
-        ],
-        "characters": [
-          {
-            "sprite": "bob_sprite.png"
-          }
-        ]
+      ],
+      "characters": [
+        {
+          "sprite": "sprites/jack.png",
+          "x": 100,
+          "width": 400,
+          "height": 600 
+
+        },
+        {
+          "sprite": "sprites/jack.png",
+          "x": 1200,
+          "side":"right",
+          "width": 400,
+          "height": 600 
       }
-    ]
-  }
-  
+      ],
+      "choices": [
+        {
+          "text": "Let's go on an adventure!",
+          "next_scene": 1
+        },
+        {
+          "text": "I'm not sure...",
+          "next_scene": 2
+        }
+      ],
+      "text_box_style": {
+        "background_color": [220, 220, 220],
+        "border_color": [100, 100, 100],
+        "border_width": 2,
+        "transparency": 0.8
+    }
+    },
+    {
+      "background": "sprites/shrine.jpg",
+      "dialogues": [
+        {
+          "speaker": "Alice",
+          "text": "Here we are, in the mysterious forest."
+        }
+      ],
+      "characters": [
+        {
+          "sprite": "sprites/illya.png",
+           "x":500,
+          "width": 400,
+          "height": 700 
+        }
+      ],
+      "choices": [
+        {
+          "text": "Search for hidden treasure.",
+          "next_scene": 3
+        },
+        {
+          "text": "Turn back and leave the forest.",
+          "next_scene": 4
+        }
+      ],
+      "text_box_style": {
+        "background_color": [220, 220, 220],
+        "border_color": [100, 100, 100],
+        "border_width": 2,
+        "transparency": 0.8
+    }
+    },
+    {
+      "background": "sprites/background.jpg",
+      "dialogues": [
+        {
+          "speaker": "Bob",
+          "text": "Look, a hidden cave entrance!"
+        }
+      ],
+      "characters": [
+        {
+          "sprite": "sprites/alter.png",
+          "x":500,
+          "width": 400,
+          "height": 700 
+        }
+      ],
+      "choices": [
+        {
+          "text": "Enter the cave cautiously.",
+          "next_scene": 5
+        },
+        {
+          "text": "Stay outside and wait.",
+          "next_scene": 6
+        }
+      ],
+      "text_box_style": {
+        "background_color": [220, 220, 220],
+        "border_color": [100, 100, 100],
+        "border_width": 2,
+        "transparency": 0.8
+    }
+    },
+    {
+      "background": "treasure_room.jpg",
+      "dialogues": [
+        {
+          "speaker": "Alice",
+          "text": "Wow, we found the hidden treasure!"
+        }
+      ],
+      "characters": [
+        {
+          "sprite": "alice_sprite.png"
+        }
+      ]
+    },
+    {
+      "background": "exit.jpg",
+      "dialogues": [
+        {
+          "speaker": "Bob",
+          "text": "Phew, that was an exciting adventure!"
+        }
+      ],
+      "characters": [
+        {
+          "sprite": "bob_sprite.png"
+        }
+      ]
+    }
+  ]
+}
