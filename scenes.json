@@ -17,16 +17,15 @@
           "sprite": "sprites/jack.png",
           "x": 100,
           "width": 400,
-          "height": 600 
-
+          "height": 600
         },
         {
           "sprite": "sprites/jack.png",
           "x": 1200,
-          "side":"right",
+          "side": "right",
           "width": 400,
-          "height": 600 
-      }
+          "height": 600
+        }
       ],
       "choices": [
         {
@@ -37,16 +36,11 @@
           "text": "I'm not sure...",
           "next_scene": 2
         }
-      ],
-      "text_box_style": {
-        "background_color": [220, 220, 220],
-        "border_color": [100, 100, 100],
-        "border_width": 2,
-        "transparency": 0.8
-    }
+      ]
     },
     {
       "background": "sprites/shrine.jpg",
+      "transition_effect": "fade", 
       "dialogues": [
         {
           "speaker": "Alice",
@@ -56,9 +50,9 @@
       "characters": [
         {
           "sprite": "sprites/illya.png",
-           "x":500,
+          "x": 500,
           "width": 400,
-          "height": 700 
+          "height": 700
         }
       ],
       "choices": [
@@ -70,13 +64,7 @@
           "text": "Turn back and leave the forest.",
           "next_scene": 4
         }
-      ],
-      "text_box_style": {
-        "background_color": [220, 220, 220],
-        "border_color": [100, 100, 100],
-        "border_width": 2,
-        "transparency": 0.8
-    }
+      ]
     },
     {
       "background": "sprites/background.jpg",
@@ -89,9 +77,9 @@
       "characters": [
         {
           "sprite": "sprites/alter.png",
-          "x":500,
+          "x": 500,
           "width": 400,
-          "height": 700 
+          "height": 700
         }
       ],
       "choices": [
@@ -103,16 +91,11 @@
           "text": "Stay outside and wait.",
           "next_scene": 6
         }
-      ],
-      "text_box_style": {
-        "background_color": [220, 220, 220],
-        "border_color": [100, 100, 100],
-        "border_width": 2,
-        "transparency": 0.8
-    }
+      ]
     },
     {
       "background": "treasure_room.jpg",
+      "transition_effect": "fade",  
       "dialogues": [
         {
           "speaker": "Alice",
@@ -127,6 +110,7 @@
     },
     {
       "background": "exit.jpg",
+      "transition_effect": "fade",  
       "dialogues": [
         {
           "speaker": "Bob",

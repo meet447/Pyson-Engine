@@ -70,6 +70,9 @@ class VisualNovelGame:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.screen_width, self.screen_height = self.screen.get_size()
         pygame.display.set_caption("Visual Novel Engine")
+        
+        self.transition_alpha = 0
+        self.transition_speed = 5  # Adjust this value to control the transition speed
 
         self.scene_index = 0
         self.dialogue_index = 0
@@ -99,6 +102,12 @@ class VisualNovelGame:
 
         self.pause_menu = PauseMenu(self.screen_width, self.screen_height)
         self.pause_menu_active = False
+        
+    def update(self):
+        if self.transition_alpha > 0:
+            self.transition_alpha -= self.transition_speed
+            if self.transition_alpha < 0:
+                self.transition_alpha = 0
 
     def save_game_data(self, data, filename):
         with open(f"saves/{filename}.json", "w") as file:
@@ -161,6 +170,7 @@ class VisualNovelGame:
             elif "choices" in current_scene:
                 self.current_state["display_choices"] = True
             else:
+                self.transition_alpha = 255  # Start the fade-out transition
                 self.current_state["dialogue_index"] = 0
                 self.current_state["scene_index"] += 1
 
@@ -170,7 +180,7 @@ class VisualNovelGame:
             for i, choice in enumerate(current_scene["choices"]):
                 button_rect = pygame.Rect(
                     self.dialogue_rect.left + 20,
-                    self.dialogue_rect.top + i * 30,
+                    self.dialogue_rect.top + i * 40,
                     self.dialogue_rect.width - 40,
                     30
                 )
@@ -178,7 +188,7 @@ class VisualNovelGame:
                     self.current_state["scene_index"] = choice["next_scene"]
                     self.current_state["display_choices"] = False
                     self.current_state["dialogue_index"] = 0
-                    break
+                break
 
     def is_mouse_over_button(self, mouse_pos, button_rect):
         return button_rect.collidepoint(mouse_pos)
@@ -208,15 +218,27 @@ class VisualNovelGame:
         border_color = text_box_style.get("border_color", (100, 100, 100))
         border_width = text_box_style.get("border_width", 2)
         transparency = text_box_style.get("transparency", 1.0)
+
         
+        # Convert background_color to tuple if it's a list
+        if isinstance(background_color, list):
+            background_color = tuple(background_color)
+
         # Apply transparency
         surface = pygame.Surface((self.dialogue_rect.width, self.dialogue_rect.height), pygame.SRCALPHA)
-        background_color_with_alpha = background_color + [int(255 * transparency)]
+        background_color_with_alpha = background_color + (int(255 * transparency),)
         pygame.draw.rect(surface, background_color_with_alpha, surface.get_rect())
         pygame.draw.rect(surface, border_color, surface.get_rect(), border_width)
         self.screen.blit(surface, self.dialogue_rect.topleft)
 
+
         y = self.dialogue_rect.top + 20
+        
+        if self.transition_alpha > 0:
+            transition_overlay = pygame.Surface((self.screen_width, self.screen_height))
+            transition_overlay.set_alpha(self.transition_alpha)
+            transition_overlay.fill((0, 0, 0))  # Fill with black color
+            self.screen.blit(transition_overlay, (0, 0))
 
         if not self.current_state["display_choices"]:
             self.render_text(
@@ -230,20 +252,20 @@ class VisualNovelGame:
             for i, choice in enumerate(current_scene["choices"]):
                 button_rect = pygame.Rect(
                     self.dialogue_rect.left + 20,
-                    y + i * 30,
+                    y + i * 40,  # Increased the spacing between buttons
                     self.dialogue_rect.width - 40,
                     30
                 )
-                color = (150, 150, 150)
-                if self.is_mouse_over_button(mouse_pos, button_rect):
-                    color = (200, 200, 200)
+                color = (200, 200, 200) if self.is_mouse_over_button(mouse_pos, button_rect) else (150, 150, 150)
 
                 pygame.draw.rect(self.screen, color, button_rect)
                 self.render_text(
                     str(i + 1) + ". " + choice["text"],
                     button_rect.left + 5,
-                    button_rect.top + 5
+                    button_rect.centery - 10  # Center the text vertically in the button
                 )
+                y += 40  # Increment the y position for the next button
+
 
         # Display character sprites
         for character in current_scene["characters"]:
