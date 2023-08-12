@@ -76,7 +76,10 @@
         ],
         "characters": [
           {
-            "sprite": "alter.png"
+            "sprite": "sprites/alter.png",
+            "x":500,
+            "width": 400,
+            "height": 700 
           }
         ],
         "choices": [

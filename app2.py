@@ -60,11 +60,27 @@ class VisualNovelGame:
         self.display_choices = False
         self.scenes = load_json("scenes.json")["scenes"]
 
+        self.current_state = {
+            "scene_index": 0,
+            "dialogue_index": 0,
+            "display_choices": False,
+            "pause_menu_active": False
+        }
+        self.states = [self.current_state]  # Store game states
+
         self.start_menu = StartMenu(self.screen_width, self.screen_height)
         self.start_menu_active = True
 
         self.pause_menu = PauseMenu(self.screen_width, self.screen_height)
         self.pause_menu_active = False
+
+    def save_state(self):
+        state_copy = self.current_state.copy()
+        self.states.append(state_copy)
+
+    def load_state(self, state_index):
+        if state_index < len(self.states):
+            self.current_state = self.states[state_index].copy()
 
     def handle_input(self):
         for event in pygame.event.get():
@@ -75,38 +91,41 @@ class VisualNovelGame:
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     self.start_menu_active = False
             else:
-                    if not self.pause_menu_active:
-                        if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_SPACE:
-                                self.handle_space_key()
-                            elif event.key == pygame.K_ESCAPE:
-                                self.pause_menu_active = True  # Activate the pause menu
-                        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                            self.handle_mouse_click()
-                    else:
-                        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                            self.pause_menu_active = False  # Close the pause menu
-
+                if not self.pause_menu_active:
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_SPACE:
+                            self.handle_space_key()
+                        elif event.key == pygame.K_ESCAPE:
+                            self.pause_menu_active = True  # Activate the pause menu
+                        elif event.key == pygame.K_s:  # Save state on 'S' key
+                            self.save_state()
+                        elif event.key == pygame.K_l:  # Load state on 'L' key
+                            self.load_state(-1)  # Load the latest saved state
+                    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                        self.handle_mouse_click()
+                else:
+                    if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                        self.pause_menu_active = False  # Close the pause menu
 
     def handle_space_key(self):
-        current_scene = self.scenes[self.scene_index]
-        if self.display_choices:
-            selected_choice = current_scene["choices"][self.dialogue_index]
-            self.scene_index = selected_choice["next_scene"]
-            self.display_choices = False
-            self.dialogue_index = 0
+        current_scene = self.scenes[self.current_state["scene_index"]]
+        if self.current_state["display_choices"]:
+            selected_choice = current_scene["choices"][self.current_state["dialogue_index"]]
+            self.current_state["scene_index"] = selected_choice["next_scene"]
+            self.current_state["display_choices"] = False
+            self.current_state["dialogue_index"] = 0
         else:
-            if self.dialogue_index < len(current_scene["dialogues"]) - 1:
-                self.dialogue_index += 1
+            if self.current_state["dialogue_index"] < len(current_scene["dialogues"]) - 1:
+                self.current_state["dialogue_index"] += 1
             elif "choices" in current_scene:
-                self.display_choices = True
+                self.current_state["display_choices"] = True
             else:
-                self.dialogue_index = 0
-                self.scene_index += 1
+                self.current_state["dialogue_index"] = 0
+                self.current_state["scene_index"] += 1
 
     def handle_mouse_click(self):
-        current_scene = self.scenes[self.scene_index]
-        if self.display_choices:
+        current_scene = self.scenes[self.current_state["scene_index"]]
+        if self.current_state["display_choices"]:
             for i, choice in enumerate(current_scene["choices"]):
                 button_rect = pygame.Rect(
                     self.dialogue_rect.left + 20,
@@ -115,9 +134,9 @@ class VisualNovelGame:
                     30
                 )
                 if self.is_mouse_over_button(pygame.mouse.get_pos(), button_rect):
-                    self.scene_index = choice["next_scene"]
-                    self.display_choices = False
-                    self.dialogue_index = 0
+                    self.current_state["scene_index"] = choice["next_scene"]
+                    self.current_state["display_choices"] = False
+                    self.current_state["dialogue_index"] = 0
                     break
 
     def is_mouse_over_button(self, mouse_pos, button_rect):
@@ -127,7 +146,7 @@ class VisualNovelGame:
         pass
 
     def render(self):
-        current_scene = self.scenes[self.scene_index]
+        current_scene = self.scenes[self.current_state["scene_index"]]
         mouse_pos = pygame.mouse.get_pos()
         self.screen.fill((255, 255, 255))
 
@@ -147,10 +166,10 @@ class VisualNovelGame:
 
         y = self.dialogue_rect.top + 20
 
-        if not self.display_choices:
+        if not self.current_state["display_choices"]:
             self.render_text(
-                current_scene["dialogues"][self.dialogue_index]["speaker"] +
-                ": " + current_scene["dialogues"][self.dialogue_index]["text"],
+                current_scene["dialogues"][self.current_state["dialogue_index"]]["speaker"] +
+                ": " + current_scene["dialogues"][self.current_state["dialogue_index"]]["text"],
                 self.dialogue_rect.left + 10,
                 y
             )
