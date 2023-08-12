@@ -14,6 +14,38 @@ def load_json(filename):
         print("Error loading JSON:", e)
         return None
 
+class StartMenu:
+    def __init__(self, screen_width, screen_height):
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.font = pygame.font.Font(None, 36)
+        self.title_text = self.font.render("Visual Novel Game", True, (0, 0, 0))
+        self.start_text = self.font.render("Press SPACE to Start", True, (0, 0, 0))
+        self.title_rect = self.title_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 - 50))
+        self.start_rect = self.start_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 + 50))
+
+    def render(self, screen):
+        screen.fill((255, 255, 255))
+        screen.blit(self.title_text, self.title_rect)
+        screen.blit(self.start_text, self.start_rect)
+
+class PauseMenu:
+    def __init__(self, screen_width, screen_height):
+        self.screen_width = screen_width
+        self.screen_height = screen_height
+        self.font = pygame.font.Font(None, 36)
+        self.resume_text = self.font.render("Resume", True, (0, 0, 0))
+        self.quit_text = self.font.render("Quit to Main Menu", True, (0, 0, 0))
+        self.resume_rect = self.resume_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 - 50))
+        self.quit_rect = self.quit_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 + 50))
+
+    def render(self, screen):
+        screen.fill((200, 200, 200))
+        pygame.draw.rect(screen, (255, 255, 255), (self.screen_width // 4, self.screen_height // 4,
+                         self.screen_width // 2, self.screen_height // 2))
+        screen.blit(self.resume_text, self.resume_rect)
+        screen.blit(self.quit_text, self.quit_rect)
+
 class VisualNovelGame:
     def __init__(self):
         self.clock = pygame.time.Clock()
@@ -28,16 +60,33 @@ class VisualNovelGame:
         self.display_choices = False
         self.scenes = load_json("scenes.json")["scenes"]
 
+        self.start_menu = StartMenu(self.screen_width, self.screen_height)
+        self.start_menu_active = True
+
+        self.pause_menu = PauseMenu(self.screen_width, self.screen_height)
+        self.pause_menu_active = False
+
     def handle_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.running = False
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-                self.handle_space_key()
+            if self.start_menu_active:
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                    self.start_menu_active = False
+            else:
+                    if not self.pause_menu_active:
+                        if event.type == pygame.KEYDOWN:
+                            if event.key == pygame.K_SPACE:
+                                self.handle_space_key()
+                            elif event.key == pygame.K_ESCAPE:
+                                self.pause_menu_active = True  # Activate the pause menu
+                        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                            self.handle_mouse_click()
+                    else:
+                        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                            self.pause_menu_active = False  # Close the pause menu
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                self.handle_mouse_click()
 
     def handle_space_key(self):
         current_scene = self.scenes[self.scene_index]
@@ -154,7 +203,14 @@ class VisualNovelGame:
         while self.running:
             self.handle_input()
             self.update()
-            self.render()
+
+            if self.start_menu_active:
+                self.start_menu.render(self.screen)
+            elif self.pause_menu_active:
+                self.pause_menu.render(self.screen)
+            else:
+                self.render()
+
             pygame.display.flip()
             self.clock.tick(60)
 
