@@ -1,5 +1,6 @@
 import pygame
 import json
+import os
 
 # Initialize Pygame
 pygame.init()
@@ -14,20 +15,35 @@ def load_json(filename):
         print("Error loading JSON:", e)
         return None
 
+# Create directory for save files
+if not os.path.exists("saves"):
+    os.makedirs("saves")
+
 class StartMenu:
     def __init__(self, screen_width, screen_height):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.font = pygame.font.Font(None, 36)
-        self.title_text = self.font.render("Visual Novel Game", True, (0, 0, 0))
-        self.start_text = self.font.render("Press SPACE to Start", True, (0, 0, 0))
+
+        with open("main_menu.txt", "r") as file:
+            menu_data = json.load(file)
+            self.title_text = self.font.render(menu_data["title"], True, (0, 0, 0))
+
+            self.option_texts = []
+            for option in menu_data["options"]:
+                self.option_texts.append(self.font.render(option, True, (0, 0, 0)))
+
         self.title_rect = self.title_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 - 50))
-        self.start_rect = self.start_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 + 50))
+        self.option_rects = []
+        for i, option_text in enumerate(self.option_texts):
+            option_rect = option_text.get_rect(center=(self.screen_width // 2, self.screen_height // 2 + i * 50))
+            self.option_rects.append(option_rect)
 
     def render(self, screen):
         screen.fill((255, 255, 255))
         screen.blit(self.title_text, self.title_rect)
-        screen.blit(self.start_text, self.start_rect)
+        for i, option_text in enumerate(self.option_texts):
+            screen.blit(option_text, self.option_rects[i])
 
 class PauseMenu:
     def __init__(self, screen_width, screen_height):
@@ -60,13 +76,23 @@ class VisualNovelGame:
         self.display_choices = False
         self.scenes = load_json("scenes.json")["scenes"]
 
-        self.current_state = {
-            "scene_index": 0,
-            "dialogue_index": 0,
-            "display_choices": False,
-            "pause_menu_active": False
-        }
-        self.states = [self.current_state]  # Store game states
+        self.save_slots = 3  # Number of available save slots
+        self.game_states = []
+
+        # Load existing saved states or initialize new ones
+        for i in range(self.save_slots):
+            loaded_state = self.load_game_data(f"save_{i}")
+            if loaded_state is not None:
+                self.game_states.append(loaded_state)
+            else:
+                self.game_states.append({
+                    "scene_index": 0,
+                    "dialogue_index": 0,
+                    "display_choices": False,
+                    "pause_menu_active": False
+                })
+
+        self.current_state = self.game_states[0]
 
         self.start_menu = StartMenu(self.screen_width, self.screen_height)
         self.start_menu_active = True
@@ -74,13 +100,25 @@ class VisualNovelGame:
         self.pause_menu = PauseMenu(self.screen_width, self.screen_height)
         self.pause_menu_active = False
 
-    def save_state(self):
-        state_copy = self.current_state.copy()
-        self.states.append(state_copy)
+    def save_game_data(self, data, filename):
+        with open(f"saves/{filename}.json", "w") as file:
+            json.dump(data, file)
 
-    def load_state(self, state_index):
-        if state_index < len(self.states):
-            self.current_state = self.states[state_index].copy()
+    def load_game_data(self, filename):
+        try:
+            with open(f"saves/{filename}.json", "r") as file:
+                return json.load(file)
+        except FileNotFoundError:
+            return None
+
+    def save_state(self, slot_index):
+        state_copy = self.current_state.copy()
+        self.game_states[slot_index] = state_copy
+        self.save_game_data(state_copy, f"save_{slot_index}")
+
+    def load_state(self, slot_index):
+        if slot_index < len(self.game_states):
+            self.current_state = self.game_states[slot_index].copy()
 
     def handle_input(self):
         for event in pygame.event.get():
@@ -98,9 +136,12 @@ class VisualNovelGame:
                         elif event.key == pygame.K_ESCAPE:
                             self.pause_menu_active = True  # Activate the pause menu
                         elif event.key == pygame.K_s:  # Save state on 'S' key
-                            self.save_state()
+                            self.save_state(0)  # Save to the first slot
                         elif event.key == pygame.K_l:  # Load state on 'L' key
-                            self.load_state(-1)  # Load the latest saved state
+                            self.load_state(0)  # Load from the first slot
+                        elif event.key in (pygame.K_1, pygame.K_2, pygame.K_3):
+                            slot_index = int(event.key) - pygame.K_1
+                            self.save_state(slot_index)
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                         self.handle_mouse_click()
                 else:
