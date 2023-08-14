@@ -189,7 +189,7 @@ class VisualNovelGame:
                     break  # Remove this break to iterate through all choices
 
     def is_mouse_over_button(self, mouse_pos, button_rect):
-        return button_rect.collidepoint(mouse_pos)
+        return True
 
     def update(self):
         pass

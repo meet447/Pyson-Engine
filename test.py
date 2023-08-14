@@ -152,7 +152,7 @@ class VisualNovelGame:
                             slot_index = int(event.key) - pygame.K_1
                             self.save_state(slot_index)
                     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                       self.handle_mouse_click()  # Handle left mouse button click
+                        self.handle_mouse_click()
                 else:
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                         self.pause_menu_active = False  # Close the pause menu
@@ -182,14 +182,14 @@ class VisualNovelGame:
                     30
                 )
                 if self.is_mouse_over_button(pygame.mouse.get_pos(), button_rect):
+                    print("clickkk")
                     self.current_state["scene_index"] = choice["next_scene"]
                     self.current_state["display_choices"] = False
                     self.current_state["dialogue_index"] = 0
                     break  # Remove this break to iterate through all choices
 
-
     def is_mouse_over_button(self, mouse_pos, button_rect):
-        return button_rect.collidepoint(mouse_pos)
+        return True
 
     def update(self):
         pass
