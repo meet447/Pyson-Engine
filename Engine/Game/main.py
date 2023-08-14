@@ -2,7 +2,7 @@ import pygame
 from Data.data import load_json
 from Menu.PauseMenu import PauseMenu
 from Menu.StartMenu import StartMenu
-import json
+import json, random
 
 pygame.init()
 
@@ -10,10 +10,15 @@ class VisualNovelGame:
     def __init__(self):
         self.clock = pygame.time.Clock()
         self.font = pygame.font.Font(None, 24)
+        
+        
+        self.slide_x = 100  # Initialize the slide X-coordinate
+        self.screen_shake = 0  # Initialize screen shake displacement
+
 
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.screen_width, self.screen_height = self.screen.get_size()
-        pygame.display.set_caption("Visual Novel Engine")
+        pygame.display.set_caption("Pyson Game Engine")
         
         self.transition_alpha = 0
         self.transition_speed = 5  # Adjust this value to control the transition speed
@@ -52,6 +57,9 @@ class VisualNovelGame:
             self.transition_alpha -= self.transition_speed
             if self.transition_alpha < 0:
                 self.transition_alpha = 0
+                
+        if self.screen_shake > 0:
+            self.screen_shake = max(0, self.screen_shake - 1)  # Gradually reduce the screen_shake magnitude
 
     def save_game_data(self, data, filename):
         with open(f"saves/{filename}.json", "w") as file:
@@ -111,9 +119,12 @@ class VisualNovelGame:
             elif "choices" in current_scene:
                 self.current_state["display_choices"] = True
             else:
-                self.transition_alpha = 255  # Start the fade-out transition
-                self.current_state["dialogue_index"] = 0
-                self.current_state["scene_index"] += 1
+                if current_scene.get("transition_effect") == "shake":
+                    self.shake_screen(magnitude=10, duration=100)  # Adjust magnitude and duration as needed
+                else:
+                    self.transition_alpha = 255
+                    self.current_state["dialogue_index"] = 0
+                    self.current_state["scene_index"] += 1
 
     def handle_mouse_click(self):
         current_scene = self.scenes[self.current_state["scene_index"]]
@@ -134,19 +145,42 @@ class VisualNovelGame:
 
     def is_mouse_over_button(self, mouse_pos, button_rect):
         return True
-
-    def update(self):
-        pass
-
+    
+    def shake_screen(self, magnitude, duration):
+        self.screen_shake = magnitude
+        pygame.time.set_timer(pygame.USEREVENT + 1, duration)
+        
+        
     def render(self):
         current_scene = self.scenes[self.current_state["scene_index"]]
         mouse_pos = pygame.mouse.get_pos()
         self.screen.fill((255, 255, 255))
+        
 
-        # Display background
+        # Apply transition effect based on JSON data
+        transition_effect = current_scene.get("transition_effect")
+        print(transition_effect)
+
+        if transition_effect == "slide_left":
+            if self.transition_alpha > 0:
+                self.slide_x -= 10
+                if self.slide_x <= -self.screen_width:
+                    self.transition_alpha = 0
+                    self.slide_x = 0
+
+        # Display background based on transition
         background_image = pygame.image.load(current_scene["background"]).convert()
-        background_image = pygame.transform.scale(background_image, (self.screen_width, self.screen_height))
-        self.screen.blit(background_image, (0, 0))
+        if transition_effect == "slide_left":
+            background_image = pygame.transform.scale(background_image, (self.screen_width, self.screen_height))
+            self.screen.blit(background_image, (self.slide_x, 0))
+        elif transition_effect == "shake":
+            if self.screen_shake > 0:
+                shake_offset = (random.randint(-self.screen_shake, self.screen_shake), random.randint(-self.screen_shake, self.screen_shake))
+            else:
+                shake_offset = (0, 0)
+        else:
+            background_image = pygame.transform.scale(background_image, (self.screen_width, self.screen_height))
+            self.screen.blit(background_image, (0, 0))
 
         # Render dialogue box
         text_box_style = current_scene.get("text_box_style", {})  # Get the style data, or use default if not provided
@@ -181,6 +215,7 @@ class VisualNovelGame:
             transition_overlay.set_alpha(self.transition_alpha)
             transition_overlay.fill((0, 0, 0))  # Fill with black color
             self.screen.blit(transition_overlay, (0, 0))
+            pygame.display.flip()
 
         if not self.current_state["display_choices"]:
             self.render_text(
