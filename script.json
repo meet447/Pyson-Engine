@@ -1,4 +1,4 @@
-  {
+{
     "scenes": [
       {
         "background": "sprites/background.jpg",
@@ -15,13 +15,13 @@
         "characters": [
           {
             "sprite": "sprites/jack.png",
-            "x": 20,
+            "x": 100,
             "width": 800,
             "height": 600
           },
           {
             "sprite": "sprites/jack.png",
-            "x": 400,
+            "x": 1500,
             "side": "right",
             "width": 800,
             "height": 600

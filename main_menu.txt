@@ -1,5 +1,5 @@
 {
-    "title": "Pyson Engine Demo",
+    "title": "Pyson Engine Demo v1.0",
     "options": [
         "Press SPACE to Start",
         "Press Q to Quit"

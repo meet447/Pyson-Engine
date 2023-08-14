@@ -21,7 +21,7 @@ class VisualNovelGame:
         self.scene_index = 0
         self.dialogue_index = 0
         self.display_choices = False
-        self.scenes = load_json("scenes.json")["scenes"]
+        self.scenes = load_json("script.json")["scenes"]
 
         self.save_slots = 3  # Number of available save slots
         self.game_states = []

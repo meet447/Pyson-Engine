@@ -1,0 +1,13 @@
+"background":"sprites/shrine.jpg",
+"dialouges":[
+    "speaker:"Saber"
+    "text":"I ASK THEE ARE YOU MY MASTER"
+],
+"characters":[
+    {
+        "sprite":"sprites/illya.png"
+        "x":200
+        "width":400
+        "height":600
+    },
+]
